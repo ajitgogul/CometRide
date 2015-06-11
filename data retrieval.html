@@ -1,0 +1,50 @@
+<html>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.20.min.js"></script>  
+<script src="aws-sdk-full.js"></script> 
+
+<script type="text/javascript">
+  // See the Configuring section to configure credentials in the SDK
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: '',
+	});
+	AWS.config.region = 'us-east-1';
+
+
+  	var dynamodb = new AWS.DynamoDB();
+	
+	/* gets item from Admin Table - specify hash key to get an item (table has only a hash key) -Prab */
+	var params = {
+  	Key: { /* required */
+	    AdminID: { /* AttributeValue */
+	      S: 'cometadmin',
+	    },
+	   },
+	  TableName: 'AdminInfo', /* required */
+	  AttributesToGet: [
+	    'AdminID',
+		'Password'
+	    /* more items */
+	  ],
+	  ConsistentRead: true,
+	  ReturnConsumedCapacity: 'TOTAL' 
+	};
+
+	dynamodb.getItem(params, function(err, data) {
+	  if (err) console.log(err, err.stack); // an error occurred
+	  else     console.log(data);           // successful response
+		routeData = data;
+	  document.getElementById("admin").innerHTML = "AdminID: "+routeData.Item.AdminID.S +"<br/> Password: "+routeData.Item.Password.S;
+	});
+</script>
+
+<body>
+
+	From AdminInfo table:
+	<div id="admin"></div>
+
+
+	
+
+</body>
+
+</html>

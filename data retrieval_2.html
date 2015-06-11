@@ -1,0 +1,70 @@
+<html>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.20.min.js"></script>  
+<script src="aws-sdk-full.js"></script> 
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=visualization"></script>
+
+<script type="text/javascript">
+  // See the Configuring section to configure credentials in the SDK
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: '',
+	});
+	AWS.config.region = 'us-east-1';
+	var taxiData = [];
+
+  	var dynamodb = new AWS.DynamoDB();
+	
+	/* gets item from Admin Table - specify hash key to get an item (table has only a hash key) -Prab */
+	var params = {
+  	// Key: { /* required */
+	//AdminID: { /* AttributeValue */
+	   //   S: 'cometadmin',
+	   // },
+	  // }, 
+	  TableName: 'StatisticInformation', /* required */
+	  AttributesToGet: [
+	    'Latitude',
+		'Longitude',
+		'RidersAtStop'
+	    /* more items */
+	  ],
+	 // ConsistentRead: true,
+	  //ReturnConsumedCapacity: 'TOTAL' 
+	};
+
+	dynamodb.scan(params, function(err, data) {
+	  if (err) console.log(err, err.stack); // an error occurred
+	  else     console.log(data);           // successful response
+		routeData = data;
+		//console.log(routeData.Count);
+		var i=0,j=0;
+		while(i<routeData.Count)
+		{
+			
+			var ridersatstop=routeData.Items[i].RidersAtStop.N;
+			console.log(ridersatstop);
+			while(j<ridersatstop)
+			{
+				var newlat=routeData.Items[i].Latitude.N;
+				var newlong=routeData.Items[i].Longitude.N
+				taxiData.push(new google.maps.LatLng(newlat,newlong));
+				j++;
+			}
+			j=0;
+			i++;
+	  //document.getElementById("admin").innerHTML = "AdminID: "+routeData.Item.AdminID +"<br/> Password: "+routeData.Item.Password;
+	  }
+	  //console.log(taxiData);
+	});
+</script>
+
+<body>
+
+	From AdminInfo table:
+	<div id="admin"></div>
+
+
+	
+
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <title>MarkerWithLabel Mouse Events</title>
+ 
+ <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3&amp;sensor=false"></script>
+ <script type="text/javascript" src="markerwithlabel.js"></script>
+ <script type="text/javascript">
+   function initMap() {
+     var latLng = new google.maps.LatLng(32.984279503311136, -96.74789874141692);
+     var homeLatLng = new google.maps.LatLng(32.984279503311136, -96.74789874141692);
+
+     var map = new google.maps.Map(document.getElementById('map_canvas'), {
+       zoom: 17,
+       center: latLng,
+       mapTypeId: google.maps.MapTypeId.ROADMAP
+     });
+
+     var marker = new MarkerWithLabel({
+       position: homeLatLng,
+       draggable: true,
+       raiseOnDrag: true,
+       map: map,
+       labelContent: "A",
+       labelAnchor: new google.maps.Point(22, 0),
+       labelClass: "labels" // the CSS class for the label
+     });
+
+     var iw = new google.maps.InfoWindow({
+       content: "Home For Sale"
+     });
+     google.maps.event.addListener(marker, "click", function (e) { iw.open(map, this); });
+     
+     google.maps.event.addListener(marker, "click", function (e) { log("Click"); });
+     google.maps.event.addListener(marker, "dragstart", function (mEvent) { log("Drag Start: " + mEvent.latLng.toString()); });
+     google.maps.event.addListener(marker, "drag", function (mEvent) { log("Drag: " + mEvent.latLng.toString()); });
+     google.maps.event.addListener(marker, "dragend", function (mEvent) { log("Drag End: " + mEvent.latLng.toString()); });
+   }
+   
+   function log(h) {
+     document.getElementById("log").innerHTML += h + "<br />";
+   }
+ </script>
+</head>
+<body onload="initMap()">
+
+ <div id="map_canvas" style="height: 400px; width: 100%;"></div>
+ <div id="log"></div>
+</body>
+</html>
